@@ -26,34 +26,24 @@ RUN gcc --version
 RUN g++ --version
 
 # build cmake
+RUN pwd
 RUN wget msoos.org/largefiles/cmake-3.12.0.tar.gz
 RUN tar xzvf cmake-3.12.0.tar.gz
-RUN cd cmake-3.12.0 || exit
-RUN ./configure
-RUN make -j4 || exit
-RUN cd ..
-
-# build m4ri
-RUN wget msoos.org/largefiles/m4ri-20200125.tar.gz
-RUN tar xzvf m4ri-20200125.tar.gz
-RUN cd m4ri-20200125 || exit
-RUN rm -rf myinstall
-RUN mkdir -p myinstall
-RUN ./configure --prefix=$(pwd)/myinstall
-RUN make -j4 VERBOSE=1 || exit
-RUN make install
-RUN cd ..
-
-#check cmake
+RUN cd cmake-3.12.0 && ./configure && make -j4
 RUN ./cmake-3.12.0/bin/cmake --version
 
+# build m4ri
+RUN pwd
+RUN wget msoos.org/largefiles/m4ri-20200125.tar.gz
+RUN tar xzvf m4ri-20200125.tar.gz
+RUN cd m4ri-20200125 && mkdir -p myinstall && ./configure --prefix=$(pwd)/myinstall && make -j4 VERBOSE=1 && make install
+
+
 # build cryptominisat
+RUN pwd
 RUN wget msoos.org/largefiles/cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
 RUN unzip cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
-RUN mkdir -p cryptominisat-devel/build
-RUN cd cryptominsat-devel/build
-RUN M4RI_ROOT_DIR=$(pwd)/../../m4ri-20200125/myinstall ../../cmake-3.12.0/bin/cmake -DENABLE_PYTHON_INTERFACE=OFF -DNOVALGRIND=ON -DSTATICCOMPILE=ON -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=OFF -DMANPAGE=OFF ..
-RUN make -j4
+RUN mkdir -p cryptominisat-devel/build && cd cryptominsat-devel/build && M4RI_ROOT_DIR=$(pwd)/../../m4ri-20200125/myinstall ../../cmake-3.12.0/bin/cmake -DENABLE_PYTHON_INTERFACE=OFF -DNOVALGRIND=ON -DSTATICCOMPILE=ON -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=OFF -DMANPAGE=OFF .. && make -j4
 
 ################
 FROM horde_base AS horde_liaison
