@@ -22,10 +22,38 @@ EXPOSE 22
 FROM ubuntu:16.04 AS builder
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt install -y cmake build-essential zlib1g-dev libopenmpi-dev git wget unzip build-essential zlib1g-dev iproute2 python python-pip build-essential gfortran wget curl libboost-program-options-dev gcc g++ unzip
+RUN gcc --version
+RUN g++ --version
+
+# build cmake
+RUN wget msoos.org/largefiles/cmake-3.12.0.tar.gz
+RUN tar xzvf cmake-3.12.0.tar.gz
+RUN cd cmake-3.12.0 || exit
+RUN ./configure
+RUN make -j4 || exit
+RUN cd ..
+
+# build m4ri
+RUN wget msoos.org/largefiles/m4ri-20200125.tar.gz
+RUN tar xzvf m4ri-20200125.tar.gz
+RUN cd m4ri-20200125 || exit
+RUN rm -rf myinstall
+RUN mkdir -p myinstall
+RUN ./configure --prefix=$(pwd)/myinstall
+RUN make -j4 VERBOSE=1 || exit
+RUN make install
+RUN cd ..
+
+#check cmake
+RUN ./cmake-3.12.0/bin/cmake --version
+
+# build cryptominisat
 RUN wget msoos.org/largefiles/cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
 RUN unzip cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
 RUN mkdir -p cryptominisat-devel/build
-RUN cd cryptominisat-devel/build && cmake -DSTATICCOMPILE=ON .. && make -j4
+RUN cd cryptominsat-devel/build
+RUN M4RI_ROOT_DIR=$(pwd)/../../m4ri-20200125/myinstall ../../cmake-3.12.0/bin/cmake -DENABLE_PYTHON_INTERFACE=OFF -DNOVALGRIND=ON -DSTATICCOMPILE=ON -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=OFF -DMANPAGE=OFF ..
+RUN make -j4
 
 ################
 FROM horde_base AS horde_liaison
