@@ -1,0 +1,3 @@
+[submodule "cryptominisat"]
+	path = cryptominisat
+	url = git@github.com:meelgroup/cryptominisat.git
