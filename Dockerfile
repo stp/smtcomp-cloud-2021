@@ -21,9 +21,10 @@ EXPOSE 22
 ################
 FROM ubuntu:16.04 AS builder
 RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt install -y cmake build-essential zlib1g-dev libopenmpi-dev git wget unzip build-essential zlib1g-dev iproute2 python python-pip build-essential gfortran wget curl libboost-program-options-dev gcc g++
-RUN git clone --depth 1 https://github.com/meelgroup/cryptominisat
-RUN cd cryptominisat
+    && DEBIAN_FRONTEND=noninteractive apt install -y cmake build-essential zlib1g-dev libopenmpi-dev git wget unzip build-essential zlib1g-dev iproute2 python python-pip build-essential gfortran wget curl libboost-program-options-dev gcc g++a unzip
+RUN wget msoos.org/largefiles/cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
+RUN unzip cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
+RUN cd cryptominisat-devel
 RUN cmake -DSTATICCOMPILE=ON ..
 RUN make -j16
 
@@ -31,7 +32,7 @@ RUN make -j16
 FROM horde_base AS horde_liaison
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt install -y awscli python3 mpi
-COPY --from=builder /cryptominisat/build/cryptominisat /cryptominisat/build/cryptominisat
+COPY --from=builder /cryptominisat-devel/build/cryptominisat5_mpi /cryptominisat-devel/build/cryptominisat5_mpi
 ADD make_combined_hostfile.py supervised-scripts/make_combined_hostfile.py
 RUN chmod 755 supervised-scripts/make_combined_hostfile.py
 ADD mpi-run.sh supervised-scripts/mpi-run.sh
