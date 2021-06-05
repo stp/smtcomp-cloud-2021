@@ -24,7 +24,8 @@ RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt install -y cmake build-essential zlib1g-dev libopenmpi-dev git wget unzip build-essential zlib1g-dev iproute2 python python-pip build-essential gfortran wget curl libboost-program-options-dev gcc g++ unzip
 RUN wget msoos.org/largefiles/cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
 RUN unzip cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
-RUN cd cryptominisat-devel && cmake -DSTATICCOMPILE=ON .. && make -j4
+RUN mkdir -p cryptominisat-devel/build
+RUN cd cryptominisat-devel/build && cmake -DSTATICCOMPILE=ON .. && make -j4
 
 ################
 FROM horde_base AS horde_liaison
