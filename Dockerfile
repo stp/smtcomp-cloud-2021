@@ -21,7 +21,7 @@ EXPOSE 22
 ################
 FROM ubuntu:20.04 AS builder
 RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt install -y cmake build-essential zlib1g-dev libopenmpi-dev git wget unzip build-essential zlib1g-dev iproute2 python python-pip build-essential gfortran wget curl libboost-program-options-dev gcc g++ unzip libopenmpi-dev
+    && DEBIAN_FRONTEND=noninteractive apt install -y cmake build-essential zlib1g-dev libopenmpi-dev git wget unzip build-essential zlib1g-dev iproute2 python3 python3-pip build-essential gfortran wget curl libboost-program-options-dev gcc g++ unzip libopenmpi-dev
 RUN gcc --version
 RUN g++ --version
 
