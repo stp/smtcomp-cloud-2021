@@ -43,19 +43,29 @@ RUN cd m4ri-20200125 && mkdir -p myinstall && ./configure --prefix=$(pwd)/myinst
 RUN pwd
 RUN wget msoos.org/largefiles/cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
 RUN unzip cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
-RUN mkdir -p cryptominisat-devel/build && cd cryptominisat-devel/build && M4RI_ROOT_DIR=$(pwd)/../../m4ri-20200125/myinstall ../../cmake-3.12.0/bin/cmake -DENABLE_PYTHON_INTERFACE=OFF -DNOVALGRIND=ON -DSTATICCOMPILE=ON -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=OFF -DMANPAGE=OFF .. && make -j4
+RUN mkdir -p cryptominisat-devel/build && cd cryptominisat-devel/build && M4RI_ROOT_DIR=$(pwd)/../../m4ri-20200125/myinstall cmake -DENABLE_PYTHON_INTERFACE=OFF -DNOVALGRIND=ON -DSTATICCOMPILE=OFF -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=OFF -DMANPAGE=OFF .. && make -j4
 RUN ls cryptominisat-devel/build/
 RUN ldd ./cryptominisat-devel/build/cryptominisat5_mpi
+RUN ls /cryptominisat-devel/build/lib/libcryptominisat5.so.5.8
+RUN ls /m4ri-20200125/myinstall/lib/libm4ri-0.0.20200125.so
 
 ################
 FROM horde_base AS horde_liaison
 RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt install -y awscli python3 mpi
+    && DEBIAN_FRONTEND=noninteractive apt install -y awscli python3 libopenmpi-dev mpi
 COPY --from=builder /cryptominisat-devel/build/cryptominisat5_mpi /cryptominisat-devel/build/cryptominisat5_mpi
+COPY --from=builder /cryptominisat-devel/build/lib/libcryptominisat5.so.5.8 /cryptominisat-devel/build/lib/libcryptominisat5.so.5.8
+COPY --from=builder /m4ri-20200125/myinstall/lib/libm4ri-0.0.20200125.so /m4ri-20200125/myinstall/lib/libm4ri-0.0.20200125.so
+
 ADD make_combined_hostfile.py supervised-scripts/make_combined_hostfile.py
 RUN chmod 755 supervised-scripts/make_combined_hostfile.py
 ADD mpi-run.sh supervised-scripts/mpi-run.sh
 USER horde
+# to run locally:
+#ADD mizh-md5-47-3.cnf mizh-md5-47-3.cnf
+#RUN mpirun -c 2 /cryptominisat-devel/build/cryptominisat5_mpi mizh-md5-47-3.cnf 2
+
+# to run on AWS
 CMD ["/usr/sbin/sshd", "-D", "-f", "/home/horde/.ssh/sshd_config"]
 CMD supervised-scripts/mpi-run.sh
 
