@@ -1,5 +1,5 @@
 ################
-FROM ubuntu:16.04 AS horde_base
+FROM ubuntu:20.04 AS horde_base
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt install -y openssh-server iproute2 openmpi-bin openmpi-common iputils-ping \
     && mkdir /var/run/sshd \
@@ -19,7 +19,7 @@ RUN echo "export VISIBLE=now" >> /etc/profile
 EXPOSE 22
 
 ################
-FROM ubuntu:16.04 AS builder
+FROM ubuntu:20.04 AS builder
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt install -y cmake build-essential zlib1g-dev libopenmpi-dev git wget unzip build-essential zlib1g-dev iproute2 python python-pip build-essential gfortran wget curl libboost-program-options-dev gcc g++ unzip libopenmpi-dev
 RUN gcc --version
