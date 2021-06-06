@@ -26,11 +26,11 @@ RUN gcc --version
 RUN g++ --version
 
 # build cmake
-RUN pwd
-RUN wget msoos.org/largefiles/cmake-3.12.0.tar.gz
-RUN tar xzvf cmake-3.12.0.tar.gz
-RUN cd cmake-3.12.0 && ./configure && make -j4
-RUN ./cmake-3.12.0/bin/cmake --version
+# RUN pwd
+# RUN wget msoos.org/largefiles/cmake-3.12.0.tar.gz
+# RUN tar xzvf cmake-3.12.0.tar.gz
+# RUN cd cmake-3.12.0 && ./configure && make -j4
+# RUN ./cmake-3.12.0/bin/cmake --version
 
 # build m4ri
 RUN pwd
