@@ -35,11 +35,18 @@ wait_for_nodes () {
   log "Running as master node"
   /stp-msoos-no-const-as-macro/build/stp --SMTLIB2 --output-CNF --exit-after-CNF test.cnf > stp_output
   if out=`grep "^unsat$" stp_output`; then
-      echo "unsat"
+      cat > output_0.cnf << EOL
+p cnf 1 1
+0
+EOL
+      #echo "unsat"
       return
   fi
   if out=`grep "^sat$" stp_output`; then
-      echo "sat"
+      cat > output_0.cnf << EOL
+p cnf 1 1
+1 0
+EOL
       return
   fi
 
