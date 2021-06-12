@@ -65,7 +65,7 @@ wait_for_nodes () {
   #  -t=<INT>         timelimit in seconds, default is unlimited.
   # time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /hordesat/hordesat  -c=${NUM_PROCESSES} -t=28800 -d=7 test.cnf
   # Cryptominisat run command: mpirun -c 2 ./cryptominisat5_mpi mizh-md5-47-3.cnf.gz 4
-  time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi test.cnf 4
+  time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi test.cnf 16
 }
 
 # Fetch and run a script
@@ -96,6 +96,7 @@ report_to_master () {
 log $NODE_TYPE
 case $NODE_TYPE in
   main)
+    # TODO run STP here.
     wait_for_nodes "${@}"
     ;;
 

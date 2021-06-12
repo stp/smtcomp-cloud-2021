@@ -29,25 +29,41 @@ RUN g++ --version
 # RUN pwd
 # RUN wget msoos.org/largefiles/cmake-3.12.0.tar.gz
 # RUN tar xzvf cmake-3.12.0.tar.gz
-# RUN cd cmake-3.12.0 && ./configure && make -j4
+# RUN cd cmake-3.12.0 && ./configure && make -j16
 # RUN ./cmake-3.12.0/bin/cmake --version
 
 # build m4ri
 RUN pwd
-RUN wget msoos.org/largefiles/m4ri-20200125.tar.gz
+COPY m4ri-20200125.tar.gz m4ri-20200125.tar.gz
+#RUN wget msoos.org/largefiles/m4ri-20200125.tar.gz
 RUN tar xzvf m4ri-20200125.tar.gz
-RUN cd m4ri-20200125 && mkdir -p myinstall && ./configure --prefix=$(pwd)/myinstall && make -j4 VERBOSE=1 && make install
+RUN cd m4ri-20200125 && mkdir -p myinstall && ./configure --prefix=$(pwd)/myinstall && make -j16 VERBOSE=1 && make install
 
 
 # build cryptominisat
 RUN pwd
-RUN wget msoos.org/largefiles/cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
+#RUN wget msoos.org/largefiles/cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
+COPY cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
 RUN unzip cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
-RUN mkdir -p cryptominisat-devel/build && cd cryptominisat-devel/build && M4RI_ROOT_DIR=$(pwd)/../../m4ri-20200125/myinstall cmake -DENABLE_PYTHON_INTERFACE=OFF -DNOVALGRIND=ON -DSTATICCOMPILE=OFF -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=OFF -DMANPAGE=OFF .. && make -j4
+RUN mkdir -p cryptominisat-devel/build && cd cryptominisat-devel/build && M4RI_ROOT_DIR=$(pwd)/../../m4ri-20200125/myinstall cmake -DENABLE_PYTHON_INTERFACE=OFF -DNOVALGRIND=ON -DSTATICCOMPILE=OFF -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=OFF -DMANPAGE=OFF .. && make -j16
 RUN ls cryptominisat-devel/build/
 RUN ldd ./cryptominisat-devel/build/cryptominisat5_mpi
 RUN ls /cryptominisat-devel/build/lib/libcryptominisat5.so.5.8
 RUN ls /m4ri-20200125/myinstall/lib/libm4ri-0.0.20200125.so
+
+# build minisat
+COPY minisat-master-37158a35c62d448b3feccfa83006266e12e5acb7.zip minisat-master-37158a35c62d448b3feccfa83006266e12e5acb7.zip
+RUN unzip minisat-master-37158a35c62d448b3feccfa83006266e12e5acb7.zip
+RUN mkdir -p minisat-master/build && cd minisat-master/build && cmake .. && make -j16
+RUN ls minisat-master/build/
+
+# build STP
+RUN apt install -y bison flex
+COPY stp-msoos-no-const-as-macro-0535cb5f6a083471e8b588b6aa814073e6425deb.zip stp-msoos-no-const-as-macro-0535cb5f6a083471e8b588b6aa814073e6425deb.zip
+RUN unzip stp-msoos-no-const-as-macro-0535cb5f6a083471e8b588b6aa814073e6425deb.zip
+RUN mkdir -p stp-msoos-no-const-as-macro/build && cd stp-msoos-no-const-as-macro/build && cmake .. && make -j16
+RUN ls stp-msoos-no-const-as-macro/build
+RUN ldd stp-msoos-no-const-as-macro/build/stp
 
 ################
 FROM horde_base AS horde_liaison
