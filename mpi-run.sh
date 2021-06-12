@@ -33,6 +33,15 @@ fi
 # wait for all nodes to report
 wait_for_nodes () {
   log "Running as master node"
+  /stp-msoos-no-const-as-macro/build/stp --SMTLIB2 --output-CNF --exit-after-CNF test.cnf > stp_output
+  if out=`grep "^unsat$" stp_output`; then
+      echo "unsat"
+      return
+  fi
+  if out=`grep "^sat$" stp_output`; then
+      echo "sat"
+      return
+  fi
 
   touch $HOST_FILE_PATH
   ip=$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
@@ -64,8 +73,17 @@ wait_for_nodes () {
   #  -c=<INT>         use that many cores on each mpi node, default is 1.
   #  -t=<INT>         timelimit in seconds, default is unlimited.
   # time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /hordesat/hordesat  -c=${NUM_PROCESSES} -t=28800 -d=7 test.cnf
+
   # Cryptominisat run command: mpirun -c 2 ./cryptominisat5_mpi mizh-md5-47-3.cnf.gz 4
-  time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi test.cnf 16
+  # time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi test.cnf 16
+
+  time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi output_0.cnf 16 | tee cms_output
+  if out=`grep "^s UNSATISFIABLE$" cms_output`; then
+      echo "unsat"
+  fi
+  if out=`grep "^s SATISFIABLE$" cms_output`; then
+      echo "sat"
+  fi
 }
 
 # Fetch and run a script
