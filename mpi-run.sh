@@ -40,14 +40,12 @@ p cnf 1 1
 0
 EOL
       #echo "unsat"
-      return
   fi
   if out=`grep "^sat$" stp_output`; then
       cat > output_0.cnf << EOL
 p cnf 1 1
 1 0
 EOL
-      return
   fi
 
   touch $HOST_FILE_PATH
