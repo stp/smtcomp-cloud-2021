@@ -71,14 +71,24 @@ RUN apt-get update \
 COPY --from=builder /cryptominisat-devel/build/cryptominisat5_mpi /cryptominisat-devel/build/cryptominisat5_mpi
 COPY --from=builder /cryptominisat-devel/build/lib/libcryptominisat5.so.5.8 /cryptominisat-devel/build/lib/libcryptominisat5.so.5.8
 COPY --from=builder /m4ri-20200125/myinstall/lib/libm4ri-0.0.20200125.so /m4ri-20200125/myinstall/lib/libm4ri-0.0.20200125.so
+COPY --from=builder /minisat-master/build/libminisat.so.2 /minisat-master/build/libminisat.so.2
+COPY --from=builder /stp-msoos-no-const-as-macro/build/stp /stp-msoos-no-const-as-macro/build/stp
+COPY --from=builder /stp-msoos-no-const-as-macro/build/lib/libstp.so.2.3 /stp-msoos-no-const-as-macro/build/lib/libstp.so.2.3
+COPY --from=builder /lib/x86_64-linux-gnu/libboost_program_options.so.1.71.0 /lib/x86_64-linux-gnu/libboost_program_options.so.1.71.0
 
 ADD make_combined_hostfile.py supervised-scripts/make_combined_hostfile.py
 RUN chmod 755 supervised-scripts/make_combined_hostfile.py
 ADD mpi-run.sh supervised-scripts/mpi-run.sh
 USER horde
-# to run locally:
-#ADD mizh-md5-47-3.cnf mizh-md5-47-3.cnf
-#RUN mpirun -c 2 /cryptominisat-devel/build/cryptominisat5_mpi mizh-md5-47-3.cnf 2
+
+# to run locally for SMT:
+# ADD square.smt2 square.smt2
+# RUN /stp-msoos-no-const-as-macro/build/stp --SMTLIB2 --output-CNF --exit-after-CNF square.smt2
+# RUN mpirun -c 16 /cryptominisat-devel/build/cryptominisat5_mpi output_0.cnf 2
+
+# to run locally for CNF:
+# ADD mizh-md5-47-3.cnf mizh-md5-47-3.cnf
+# RUN mpirun -c 16 /cryptominisat-devel/build/cryptominisat5_mpi mizh-md5-47-3.cnf 2
 
 # to run on AWS
 CMD ["/usr/sbin/sshd", "-D", "-f", "/home/horde/.ssh/sshd_config"]
