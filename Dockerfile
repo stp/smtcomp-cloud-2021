@@ -42,9 +42,8 @@ RUN cd m4ri-20200125 && mkdir -p myinstall && ./configure --prefix=$(pwd)/myinst
 
 # build cryptominisat
 RUN pwd
-#RUN wget msoos.org/largefiles/cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
-COPY cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
-RUN unzip cryptominisat-devel-169397b72af155dcfe205410b895b8b200f009bf.zip
+COPY cryptominisat-devel-2b42ab22805ab5d2fc9bc8d0e3c6c63f3e0e04d4.zip cryptominisat-devel-2b42ab22805ab5d2fc9bc8d0e3c6c63f3e0e04d4.zip
+RUN unzip cryptominisat-devel-2b42ab22805ab5d2fc9bc8d0e3c6c63f3e0e04d4.zip
 RUN mkdir -p cryptominisat-devel/build && cd cryptominisat-devel/build && M4RI_ROOT_DIR=$(pwd)/../../m4ri-20200125/myinstall cmake -DENABLE_PYTHON_INTERFACE=OFF -DNOVALGRIND=ON -DSTATICCOMPILE=OFF -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=OFF -DMANPAGE=OFF .. && make -j16
 RUN ls cryptominisat-devel/build/
 RUN ldd ./cryptominisat-devel/build/cryptominisat5_mpi
