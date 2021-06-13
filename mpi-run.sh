@@ -82,7 +82,7 @@ EOL
   # Cryptominisat run command: mpirun -c 2 ./cryptominisat5_mpi mizh-md5-47-3.cnf.gz 4
   # time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi test.cnf 16
 
-  time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi output_0.cnf 16 | tee cms_output
+  time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi output_0.cnf 16 > cms_output 2>/dev/null
   if out=`grep "^s UNSATISFIABLE$" cms_output`; then
       echo "unsat"
   fi
