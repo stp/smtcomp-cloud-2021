@@ -59,7 +59,7 @@ RUN ls minisat-master/build/
 # build STP
 RUN apt install -y bison flex
 COPY stp-msoos-no-const-as-macro-2-dc66202ad12ee88fc427e0bdf22240047366efb8.zip stp-msoos-no-const-as-macro-2-dc66202ad12ee88fc427e0bdf22240047366efb8.zip
-RUN stp-msoos-no-const-as-macro-2-dc66202ad12ee88fc427e0bdf22240047366efb8.zip
+RUN unzip stp-msoos-no-const-as-macro-2-dc66202ad12ee88fc427e0bdf22240047366efb8.zip
 RUN mv stp-msoos-no-const-as-macro-2 stp-msoos-no-const-as-macro
 RUN mkdir -p stp-msoos-no-const-as-macro/build && cd stp-msoos-no-const-as-macro/build && cmake .. && make -j4
 RUN ls stp-msoos-no-const-as-macro/build
