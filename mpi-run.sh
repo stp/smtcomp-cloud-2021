@@ -33,21 +33,6 @@ fi
 # wait for all nodes to report
 wait_for_nodes () {
   log "Running as master node"
-  /stp-msoos-no-const-as-macro/build/stp --SMTLIB2 --output-CNF --exit-after-CNF test.cnf > stp_output
-  if out=`grep "^unsat$" stp_output`; then
-      cat > output_0.cnf << EOL
-p cnf 1 1
-0
-EOL
-      #echo "unsat"
-  fi
-  if out=`grep "^sat$" stp_output`; then
-      cat > output_0.cnf << EOL
-p cnf 1 1
-1 0
-EOL
-  fi
-
   touch $HOST_FILE_PATH
   ip=$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
 
@@ -72,6 +57,21 @@ EOL
   # into one file with the following script:
   supervised-scripts/make_combined_hostfile.py ${ip}
   cat combined_hostfile
+
+    /stp-msoos-no-const-as-macro/build/stp --SMTLIB2 --output-CNF --exit-after-CNF test.cnf > stp_output
+  if out=`grep "^unsat$" stp_output`; then
+      cat > output_0.cnf << EOL
+p cnf 1 1
+0
+EOL
+      #echo "unsat"
+  fi
+  if out=`grep "^sat$" stp_output`; then
+      cat > output_0.cnf << EOL
+p cnf 1 1
+1 0
+EOL
+  fi
 
   # REPLACE THE FOLLOWING LINE WITH YOUR PARTICULAR SOLVER
   #  -d=0...7         diversification 0=none, 1=sparse, 2=dense, 3=random, 4=native(plingeling), 5=1&4, 6=sparse-random, 7=6&4, default is 1.
