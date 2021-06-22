@@ -57,6 +57,7 @@ wait_for_nodes () {
   # All of the hosts report their IP and number of processors. Combine all these
   # into one file with the following script:
   supervised-scripts/make_combined_hostfile.py ${ip}
+  log "combined logfile is:"
   cat combined_hostfile
 
   log "running STP now"
