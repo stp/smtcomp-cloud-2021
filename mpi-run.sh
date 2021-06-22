@@ -51,6 +51,7 @@ wait_for_nodes () {
     sleep 1
 #    lines=$(sort $HOST_FILE_PATH|uniq|wc -l)
   done
+  log "OK, all joined now"
 
 
   # All of the hosts report their IP and number of processors. Combine all these
@@ -58,7 +59,10 @@ wait_for_nodes () {
   supervised-scripts/make_combined_hostfile.py ${ip}
   cat combined_hostfile
 
-    /stp-msoos-no-const-as-macro/build/stp --SMTLIB2 --output-CNF --exit-after-CNF test.cnf > stp_output
+  log "running STP now"
+  /stp-msoos-no-const-as-macro/build/stp --SMTLIB2 --output-CNF --exit-after-CNF test.cnf > stp_output
+  log "STP output is:"
+  cat stp_output
   if out=`grep "^unsat$" stp_output`; then
       cat > output_0.cnf << EOL
 p cnf 1 1
@@ -77,7 +81,7 @@ EOL
   # TESTING for STP/output_0.cnf issues?
   log "checking output_0.cnf exists"
   ls -lah output_0.cnf
-  cp test.cnf output_0.cnf
+  # cp test.cnf output_0.cnf
 
 
   # REPLACE THE FOLLOWING LINE WITH YOUR PARTICULAR SOLVER
@@ -89,8 +93,9 @@ EOL
   # Cryptominisat run command: mpirun -c 2 ./cryptominisat5_mpi mizh-md5-47-3.cnf.gz 4
   # time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi test.cnf 16
 
-  log "Working launching MPI system"
+  log "Launching MPI system"
   time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi output_0.cnf 8 2>/dev/null | tee cms_output
+  cat cms_output
   log "MPI system finished"
   if out=`grep "^s UNSATISFIABLE$" cms_output`; then
       echo "unsat"
