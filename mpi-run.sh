@@ -90,7 +90,7 @@ EOL
   # time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi test.cnf 16
 
   log "Working launching MPI system"
-  time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi output_0.cnf 8 > cms_output 2>/dev/null
+  time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi output_0.cnf 8 2>/dev/null | tee cms_output
   log "MPI system finished"
   if out=`grep "^s UNSATISFIABLE$" cms_output`; then
       echo "unsat"
