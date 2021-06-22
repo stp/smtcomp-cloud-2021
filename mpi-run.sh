@@ -64,14 +64,21 @@ wait_for_nodes () {
 p cnf 1 1
 0
 EOL
-      #echo "unsat"
+      log "c STP found unsat"
   fi
   if out=`grep "^sat$" stp_output`; then
       cat > output_0.cnf << EOL
 p cnf 1 1
 1 0
 EOL
+    log "c STP found sat"
   fi
+
+  # TESTING for STP/output_0.cnf issues?
+  log "checking output_0.cnf exists"
+  ls -lah output_0.cnf
+  cp test.cnf output_0.cnf
+
 
   # REPLACE THE FOLLOWING LINE WITH YOUR PARTICULAR SOLVER
   #  -d=0...7         diversification 0=none, 1=sparse, 2=dense, 3=random, 4=native(plingeling), 5=1&4, 6=sparse-random, 7=6&4, default is 1.
@@ -82,13 +89,16 @@ EOL
   # Cryptominisat run command: mpirun -c 2 ./cryptominisat5_mpi mizh-md5-47-3.cnf.gz 4
   # time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi test.cnf 16
 
+  log "Working launching MPI system"
   time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi output_0.cnf 8 > cms_output 2>/dev/null
+  log "MPI system finished"
   if out=`grep "^s UNSATISFIABLE$" cms_output`; then
       echo "unsat"
   fi
   if out=`grep "^s SATISFIABLE$" cms_output`; then
       echo "sat"
   fi
+  log "we are done, exiting"
 }
 
 # Fetch and run a script
