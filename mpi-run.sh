@@ -104,7 +104,6 @@ EOL
   if out=`grep "^s SATISFIABLE$" cms_output`; then
       echo "sat"
   fi
-  log "we are done, exiting"
 }
 
 # Fetch and run a script
