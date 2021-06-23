@@ -61,7 +61,7 @@ wait_for_nodes () {
   cat combined_hostfile
 
   log "running STP now"
-  /stp-msoos-no-const-as-macro/build/stp --SMTLIB2 --output-CNF --exit-after-CNF test.cnf > stp_output
+    /stp-msoos-no-const-as-macro/build/stp --SMTLIB2 --output-CNF --exit-after-CNF test.cnf > stp_output
   log "STP output is:"
   cat stp_output
   if out=`grep "^unsat$" stp_output`; then
