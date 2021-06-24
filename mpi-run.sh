@@ -61,7 +61,7 @@ wait_for_nodes () {
   cat combined_hostfile
 
   log "running STP now"
-    /stp-msoos-no-const-as-macro/build/stp --SMTLIB2 --output-CNF --exit-after-CNF test.cnf > stp_output
+  /usr/bin/time -f %e -o mytime1 /stp-msoos-no-const-as-macro/build/stp --SMTLIB2 --output-CNF --exit-after-CNF test.cnf > stp_output
   log "STP output is:"
   cat stp_output
   if out=`grep "^unsat$" stp_output`; then
@@ -95,9 +95,16 @@ EOL
   # time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi test.cnf 16
 
   log "Launching MPI system"
-  time mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi output_0.cnf 8 2>/dev/null | tee cms_output
+  /usr/bin/time -f %e -o mytime2 mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root -np ${AWS_BATCH_JOB_NUM_NODES} --hostfile combined_hostfile /cryptominisat-devel/build/cryptominisat5_mpi output_0.cnf 8 2>/dev/null | tee cms_output
   cat cms_output
   log "MPI system finished"
+  t1=`cat mytime1 | tail -n 1`
+  t2=`cat mytime2 | tail -n 1`
+  t3=`echo "$t1+$t2" | bc`
+  echo "time for STP: $t1"
+  echo "time for CMS: $t2"
+  echo "real ${t3}s"
+
   if out=`grep "^s UNSATISFIABLE$" cms_output`; then
       echo "unsat"
   fi
