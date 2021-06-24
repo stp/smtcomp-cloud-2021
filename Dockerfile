@@ -67,7 +67,7 @@ RUN ldd stp-msoos-no-const-as-macro/build/stp
 
 # add "time"
 RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt install -y time
+    && DEBIAN_FRONTEND=noninteractive apt install -y time bc
 
 
 ################
@@ -82,6 +82,7 @@ COPY --from=builder /stp-msoos-no-const-as-macro/build/stp /stp-msoos-no-const-a
 COPY --from=builder /stp-msoos-no-const-as-macro/build/lib/libstp.so.2.3 /stp-msoos-no-const-as-macro/build/lib/libstp.so.2.3
 COPY --from=builder /lib/x86_64-linux-gnu/libboost_program_options.so.1.71.0 /lib/x86_64-linux-gnu/libboost_program_options.so.1.71.0
 COPY --from=builder /usr/bin/time /usr/bin/time
+COPY --from=builder /usr/bin/bc /usr/bin/bc
 
 ADD make_combined_hostfile.py supervised-scripts/make_combined_hostfile.py
 RUN chmod 755 supervised-scripts/make_combined_hostfile.py
