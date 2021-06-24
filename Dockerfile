@@ -65,6 +65,11 @@ RUN mkdir -p stp-msoos-no-const-as-macro/build && cd stp-msoos-no-const-as-macro
 RUN ls stp-msoos-no-const-as-macro/build
 RUN ldd stp-msoos-no-const-as-macro/build/stp
 
+# add "time"
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt install -y time
+
+
 ################
 FROM horde_base AS horde_liaison
 RUN apt-get update \
@@ -76,6 +81,7 @@ COPY --from=builder /minisat-master/build/libminisat.so.2 /minisat-master/build/
 COPY --from=builder /stp-msoos-no-const-as-macro/build/stp /stp-msoos-no-const-as-macro/build/stp
 COPY --from=builder /stp-msoos-no-const-as-macro/build/lib/libstp.so.2.3 /stp-msoos-no-const-as-macro/build/lib/libstp.so.2.3
 COPY --from=builder /lib/x86_64-linux-gnu/libboost_program_options.so.1.71.0 /lib/x86_64-linux-gnu/libboost_program_options.so.1.71.0
+COPY --from=builder /usr/bin/time /usr/bin/time
 
 ADD make_combined_hostfile.py supervised-scripts/make_combined_hostfile.py
 RUN chmod 755 supervised-scripts/make_combined_hostfile.py
